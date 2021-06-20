@@ -1,6 +1,6 @@
 {
     "name": "Leopotam.EcsLite.UnityEditor.Runtime",
-    "rootNamespace": "Leopotam.EcsLite.UnityEditor.Runtime",
+    "rootNamespace": "Leopotam.EcsLite.UnityEditor",
     "references": [
         "Leopotam.EcsLite"
     ],

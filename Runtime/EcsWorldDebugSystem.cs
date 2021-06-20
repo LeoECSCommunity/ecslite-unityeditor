@@ -11,17 +11,17 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Leopotam.EcsLite.UnityEditor {
-    public sealed class EcsWorldUnityEditorSystem : IEcsPreInitSystem, IEcsRunSystem, IEcsWorldEventListener {
+    public sealed class EcsWorldDebugSystem : IEcsPreInitSystem, IEcsRunSystem, IEcsWorldEventListener {
         readonly string _worldName;
         readonly GameObject _rootGO;
         readonly Transform _entitiesRoot;
         readonly bool _bakeComponentsInName;
         EcsWorld _world;
-        EcsEntityObserver[] _entities;
+        EcsEntityDebugView[] _entities;
         Dictionary<int, byte> _dirtyEntities;
         Type[] _typesCache;
 
-        public EcsWorldUnityEditorSystem (string worldName = null, bool bakeComponentsInName = true) {
+        public EcsWorldDebugSystem (string worldName = null, bool bakeComponentsInName = true) {
             _bakeComponentsInName = bakeComponentsInName;
             _worldName = worldName;
             _rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
@@ -35,7 +35,7 @@ namespace Leopotam.EcsLite.UnityEditor {
         public void PreInit (EcsSystems systems) {
             _world = systems.GetWorld (_worldName);
             if (_world == null) { throw new Exception ("Cant find required world."); }
-            _entities = new EcsEntityObserver [_world.GetWorldSize ()];
+            _entities = new EcsEntityDebugView [_world.GetWorldSize ()];
             _dirtyEntities = new Dictionary<int, byte> (_entities.Length);
             _world.AddEventListener (this);
         }
@@ -47,7 +47,7 @@ namespace Leopotam.EcsLite.UnityEditor {
                 if (_world.GetEntityGen (entity) > 0) {
                     var count = _world.GetComponentTypes (entity, ref _typesCache);
                     for (var i = 0; i < count; i++) {
-                        entityName = $"{entityName}:{EditorHelpers.GetCleanGenericTypeName (_typesCache[i])}";
+                        entityName = $"{entityName}:{EditorExtensions.GetCleanGenericTypeName (_typesCache[i])}";
                     }
                 }
                 _entities[entity].name = entityName;
@@ -59,7 +59,7 @@ namespace Leopotam.EcsLite.UnityEditor {
             if (!_entities[entity]) {
                 var go = new GameObject ();
                 go.transform.SetParent (_entitiesRoot, false);
-                var entityObserver = go.AddComponent<EcsEntityObserver> ();
+                var entityObserver = go.AddComponent<EcsEntityDebugView> ();
                 entityObserver.Entity = entity;
                 entityObserver.World = _world;
                 _entities[entity] = entityObserver;

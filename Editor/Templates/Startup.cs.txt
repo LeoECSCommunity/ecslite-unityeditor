@@ -3,18 +3,13 @@ using UnityEngine;
 
 namespace #NS# {
     sealed class #SCRIPTNAME# : MonoBehaviour {
-        EcsWorld _world;
         EcsSystems _systems;
 
         void Start () {        
-            _world = new EcsWorld ();
             // register your shared data here, for example:
             // var shared = new Shared ();
-            // systems = new EcsSystems (world, shared);
-            _systems = new EcsSystems (_world);
-#if UNITY_EDITOR
-            Leopotam.EcsLite.UnityEditor.EcsWorldObserver.Create (_world);
-#endif
+            // systems = new EcsSystems (new EcsWorld (), shared);
+            _systems = new EcsSystems (new EcsWorld ());
             _systems
                 // register your systems here, for example:
                 // .Add (new TestSystem1 ())
@@ -27,7 +22,11 @@ namespace #NS# {
                 // for components cleanup (order is important), for example:
                 // .DelHere<TestComponent1> ()
                 // .DelHere<TestComponent2> ()
-                
+#if UNITY_EDITOR
+                // add debug systems for custom worlds here, for example:
+                // .Add (new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem ("events"))
+                .Add (new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem ())
+#endif
                 .Init ();
         }
 
@@ -38,11 +37,10 @@ namespace #NS# {
         void OnDestroy () {
             if (_systems != null) {
                 _systems.Destroy ();
+                // add here cleanup for custom worlds, for example:
+                // _systems.GetWorld ("events").Destroy ();
+                _systems.GetWorld ().Destroy ();
                 _systems = null;
-            }
-            if (_world != null) {
-                _world.Destroy ();
-                _world = null;
             }
         }
     }

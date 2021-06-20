@@ -39,13 +39,14 @@ If you can't / don't want to use unity modules, code can be cloned or downloaded
 ```csharp
 // ecs-startup code:
 void Start () {        
-    _world = new EcsWorld ();
-    _systems = new EcsSystems (_world);
-#if UNITY_EDITOR
-    Leopotam.EcsLite.UnityEditor.EcsWorldObserver.Create (_world);
-#endif
+    _systems = new EcsSystems (new EcsWorld ());
     _systems
         .Add (new TestSystem1 ())
+#if UNITY_EDITOR
+        // add debug systems for custom worlds here, for example:
+        // .Add (new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem ("events"))
+        .Add (new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem ())
+#endif
         .Init ();
 }
 ```

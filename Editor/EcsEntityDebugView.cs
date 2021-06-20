@@ -12,47 +12,38 @@ using UnityEditor;
 using UnityEngine;
 
 namespace Leopotam.EcsLite.UnityEditor {
-    [CustomEditor (typeof (EcsEntityObserver))]
-    sealed class EcsEntityObserverInspector : Editor {
+    [CustomEditor (typeof (EcsEntityDebugView))]
+    sealed class EcsEntityDebugViewInspector : Editor {
         const int MaxFieldToStringLength = 128;
 
         static object[] _componentsCache = new object[32];
 
-        EcsEntityObserver _observer;
-
         public override void OnInspectorGUI () {
-            if (_observer.World != null) {
+            var observer = (EcsEntityDebugView) target;
+            if (observer.World != null) {
                 var guiEnabled = GUI.enabled;
                 GUI.enabled = true;
-                DrawComponents ();
+                DrawComponents (observer);
                 GUI.enabled = guiEnabled;
                 EditorUtility.SetDirty (target);
             }
         }
 
-        void OnEnable () {
-            _observer = target as EcsEntityObserver;
-        }
-
-        void OnDisable () {
-            _observer = null;
-        }
-
-        void DrawComponents () {
-            if (_observer.gameObject.activeSelf) {
-                var count = _observer.World.GetComponents (_observer.Entity, ref _componentsCache);
+        void DrawComponents (EcsEntityDebugView debugView) {
+            if (debugView.gameObject.activeSelf) {
+                var count = debugView.World.GetComponents (debugView.Entity, ref _componentsCache);
                 for (var i = 0; i < count; i++) {
                     var component = _componentsCache[i];
                     _componentsCache[i] = null;
                     var type = component.GetType ();
                     GUILayout.BeginVertical (GUI.skin.box);
-                    var typeName = EditorHelpers.GetCleanGenericTypeName (type);
-                    if (!EcsComponentInspectors.Render (typeName, type, component, _observer)) {
+                    var typeName = EditorExtensions.GetCleanGenericTypeName (type);
+                    if (!EcsComponentInspectors.Render (typeName, type, component, debugView)) {
                         EditorGUILayout.LabelField (typeName, EditorStyles.boldLabel);
                         var indent = EditorGUI.indentLevel;
                         EditorGUI.indentLevel++;
                         foreach (var field in type.GetFields (BindingFlags.Instance | BindingFlags.Public)) {
-                            DrawTypeField (component, field, _observer);
+                            DrawTypeField (component, field, debugView);
                         }
                         EditorGUI.indentLevel = indent;
                     }
@@ -62,7 +53,7 @@ namespace Leopotam.EcsLite.UnityEditor {
             }
         }
 
-        void DrawTypeField (object instance, FieldInfo field, EcsEntityObserver entity) {
+        void DrawTypeField (object instance, FieldInfo field, EcsEntityDebugView entity) {
             var fieldValue = field.GetValue (instance);
             var fieldType = field.FieldType;
             if (!EcsComponentInspectors.Render (field.Name, fieldType, fieldValue, entity)) {
@@ -107,9 +98,9 @@ namespace Leopotam.EcsLite.UnityEditor {
             }
         }
 
-        public static bool Render (string label, Type type, object value, EcsEntityObserver observer) {
+        public static bool Render (string label, Type type, object value, EcsEntityDebugView debugView) {
             if (Inspectors.TryGetValue (type, out var inspector)) {
-                inspector.OnGUI (label, value, observer.World, observer.Entity);
+                inspector.OnGUI (label, value, debugView.World, debugView.Entity);
                 return true;
             }
             return false;
