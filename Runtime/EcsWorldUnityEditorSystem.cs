@@ -13,6 +13,7 @@ using Object = UnityEngine.Object;
 namespace Leopotam.EcsLite.UnityEditor {
     public sealed class EcsWorldUnityEditorSystem : IEcsPreInitSystem, IEcsRunSystem, IEcsWorldEventListener {
         readonly string _worldName;
+        readonly GameObject _rootGO;
         readonly Transform _entitiesRoot;
         EcsWorld _world;
         EcsEntityObserver[] _entities;
@@ -21,12 +22,12 @@ namespace Leopotam.EcsLite.UnityEditor {
 
         public EcsWorldUnityEditorSystem (string worldName = null) {
             _worldName = worldName;
-            var go = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
-            Object.DontDestroyOnLoad (go);
-            go.hideFlags = HideFlags.NotEditable;
+            _rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
+            Object.DontDestroyOnLoad (_rootGO);
+            _rootGO.hideFlags = HideFlags.NotEditable;
             _entitiesRoot = new GameObject ("Entities").transform;
             _entitiesRoot.gameObject.hideFlags = HideFlags.NotEditable;
-            _entitiesRoot.SetParent (go.transform, false);
+            _entitiesRoot.SetParent (_rootGO.transform, false);
         }
 
         public void PreInit (EcsSystems systems) {
@@ -81,6 +82,7 @@ namespace Leopotam.EcsLite.UnityEditor {
 
         public void OnWorldDestroyed (EcsWorld world) {
             _world.RemoveEventListener (this);
+            Object.Destroy (_rootGO);
         }
     }
 }
