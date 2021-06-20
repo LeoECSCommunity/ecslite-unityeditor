@@ -15,12 +15,14 @@ namespace Leopotam.EcsLite.UnityEditor {
         readonly string _worldName;
         readonly GameObject _rootGO;
         readonly Transform _entitiesRoot;
+        readonly bool _bakeComponentsInName;
         EcsWorld _world;
         EcsEntityObserver[] _entities;
         Dictionary<int, byte> _dirtyEntities;
         Type[] _typesCache;
 
-        public EcsWorldUnityEditorSystem (string worldName = null) {
+        public EcsWorldUnityEditorSystem (string worldName = null, bool bakeComponentsInName = true) {
+            _bakeComponentsInName = bakeComponentsInName;
             _worldName = worldName;
             _rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
             Object.DontDestroyOnLoad (_rootGO);
@@ -61,17 +63,25 @@ namespace Leopotam.EcsLite.UnityEditor {
                 entityObserver.Entity = entity;
                 entityObserver.World = _world;
                 _entities[entity] = entityObserver;
-                _dirtyEntities[entity] = 1;
+                if (_bakeComponentsInName) {
+                    _dirtyEntities[entity] = 1;
+                } else {
+                    go.name = entity.ToString ("X8");
+                }
             }
             _entities[entity].gameObject.SetActive (true);
         }
 
         public void OnEntityDestroyed (int entity) {
-            _entities[entity].gameObject.SetActive (false);
+            if (_entities[entity]) {
+                _entities[entity].gameObject.SetActive (false);
+            }
         }
 
         public void OnEntityChanged (int entity) {
-            _dirtyEntities[entity] = 1;
+            if (_bakeComponentsInName) {
+                _dirtyEntities[entity] = 1;
+            }
         }
 
         public void OnFilterCreated (EcsFilter filter) { }
