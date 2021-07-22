@@ -17,11 +17,6 @@ namespace #NS# {
                 
                 // register additional worlds here, for example:
                 // .AddWorld (new EcsWorld (), "events")
-                
-                // register "delete-here" helpers here
-                // for components cleanup (order is important), for example:
-                // .DelHere<TestComponent1> ()
-                // .DelHere<TestComponent2> ()
 #if UNITY_EDITOR
                 // add debug systems for custom worlds here, for example:
                 // .Add (new Leopotam.EcsLite.UnityEditor.EcsWorldDebugSystem ("events"))
