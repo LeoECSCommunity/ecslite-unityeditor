@@ -16,14 +16,16 @@ namespace Leopotam.EcsLite.UnityEditor {
         readonly GameObject _rootGO;
         readonly Transform _entitiesRoot;
         readonly bool _bakeComponentsInName;
+        readonly string _entityNameFormat;
         EcsWorld _world;
         EcsEntityDebugView[] _entities;
         Dictionary<int, byte> _dirtyEntities;
         Type[] _typesCache;
 
-        public EcsWorldDebugSystem (string worldName = null, bool bakeComponentsInName = true) {
+        public EcsWorldDebugSystem (string worldName = null, bool bakeComponentsInName = true, string entityNameFormat = "X8") {
             _bakeComponentsInName = bakeComponentsInName;
             _worldName = worldName;
+            _entityNameFormat = entityNameFormat;
             _rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
             Object.DontDestroyOnLoad (_rootGO);
             _rootGO.hideFlags = HideFlags.NotEditable;
@@ -43,7 +45,7 @@ namespace Leopotam.EcsLite.UnityEditor {
         public void Run (EcsSystems systems) {
             foreach (var pair in _dirtyEntities) {
                 var entity = pair.Key;
-                var entityName = entity.ToString ("X8");
+                var entityName = entity.ToString (_entityNameFormat);
                 if (_world.GetEntityGen (entity) > 0) {
                     var count = _world.GetComponentTypes (entity, ref _typesCache);
                     for (var i = 0; i < count; i++) {
@@ -66,7 +68,7 @@ namespace Leopotam.EcsLite.UnityEditor {
                 if (_bakeComponentsInName) {
                     _dirtyEntities[entity] = 1;
                 } else {
-                    go.name = entity.ToString ("X8");
+                    go.name = entity.ToString (_entityNameFormat);
                 }
             }
             _entities[entity].gameObject.SetActive (true);
