@@ -50,7 +50,17 @@ void Start () {
 #endif
         .Init ();
 }
+
+void Update () {
+    // you should call Run() for EcsWorldDebugSystem container EcsSystems,
+    // otherwise names will not be updated with wastes of internal allocations.
+    _systems.Run();
+}
 ```
+
+> **Important!** By default component names will be baked to GameObject name on each change in delayed manner - its why you should call `EcsSystems.Run()` for systems group that contains `EcsWorldDebugSystem`.
+> If you don't need this info (for performance reason for example), you can disable it with passing `bakeComponentsInName = false` parameter in ctor of `EcsWorldDebugSystem`.
+
 
 ## From UI
 Some code can be generated automatically from unity editor main menu "Assets / Create / LeoECS Lite". 

@@ -40,6 +40,11 @@ namespace Leopotam.EcsLite.UnityEditor {
             _entities = new EcsEntityDebugView [_world.GetWorldSize ()];
             _dirtyEntities = new Dictionary<int, byte> (_entities.Length);
             _world.AddEventListener (this);
+            var entities = Array.Empty<int> ();
+            var entitiesCount = _world.GetAllEntities (ref entities);
+            for (var i = 0; i < entitiesCount; i++) {
+                OnEntityCreated (entities[i]);
+            }
         }
 
         public void Run (EcsSystems systems) {
