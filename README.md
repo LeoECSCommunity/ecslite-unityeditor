@@ -63,7 +63,7 @@ void Update () {
 
 
 ## From UI
-Some code can be generated automatically from unity editor main menu "Assets / Create / LeoECS Lite". 
+Some code can be generated automatically from unity editor main menu "Assets / Create / LeoECS Lite".
 
 # License
 The software is released under the terms of the [MIT license](./LICENSE.md).
@@ -165,3 +165,29 @@ If you really want to create data in `PreInit()` method (that not recommended), 
         }
     }
 ```
+
+### I can't edit my custom type, but can builtin simple types. How can I do it?
+
+With custom inspector drawer:
+```csharp
+public struct C2 {
+    public string Name;
+}
+
+// somewhere in project - it will be found automatically.
+#if UNITY_EDITOR
+sealed class C2Inspector : EcsComponentInspectorTyped<C2> {
+    public override bool OnGuiTyped (string label, ref C2 value, EcsWorld world, int entityId) {
+        EditorGUILayout.LabelField ($"Super C2 component", EditorStyles.boldLabel);
+        var newValue = EditorGUILayout.TextField ("Name", value.Name);
+        EditorGUILayout.HelpBox ($"Hello, {value.Name}", MessageType.Info);
+        // If value not changed - just return false.
+        if (newValue == value.Name) { return false; }
+        // Otherwise - overwrite value and return true.
+        value.Name = newValue;
+        return true;
+    }
+}
+#endif
+```
+It works for components and component fields.
