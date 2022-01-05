@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Leopotam.EcsLite.UnityEditor.Inspectors {
     sealed class RectInspector : EcsComponentInspectorTyped<Rect> {
-        public override bool OnGuiTyped (string label, ref Rect value, EcsWorld world, int entityId) {
+        public override bool OnGuiTyped (string label, ref Rect value, EcsEntityDebugView entityView) {
             var newValue = EditorGUILayout.RectField (label, value);
             if (newValue == value) { return false; }
             value = newValue;

@@ -28,6 +28,8 @@ namespace Leopotam.EcsLite.UnityEditor {
         public EcsWorld World;
         [NonSerialized]
         public int Entity;
+        [NonSerialized]
+        public EcsWorldDebugSystem DebugSystem;
     }
 }
 #endif

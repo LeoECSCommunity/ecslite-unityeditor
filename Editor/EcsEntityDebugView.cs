@@ -63,7 +63,7 @@ namespace Leopotam.EcsLite.UnityEditor {
             var fieldType = field.FieldType;
             var (rendered, changed, newValue) = EcsComponentInspectors.Render (field.Name, fieldType, fieldValue, debugView);
             if (!rendered) {
-                if (fieldType == typeof (Object) || fieldType.IsSubclassOf (typeof (UnityEngine.Object))) {
+                if (fieldType == typeof (Object) || fieldType.IsSubclassOf (typeof (Object))) {
                     GUILayout.BeginHorizontal ();
                     EditorGUILayout.LabelField (field.Name, GUILayout.MaxWidth (EditorGUIUtility.labelWidth - 16));
                     var newObjValue = EditorGUILayout.ObjectField (fieldValue as Object, fieldType, true);
@@ -88,7 +88,7 @@ namespace Leopotam.EcsLite.UnityEditor {
                     strVal = strVal.Substring (0, MaxFieldToStringLength);
                 }
                 GUILayout.BeginHorizontal ();
-                EditorGUILayout.SelectableLabel (field.Name, GUILayout.MaxWidth (EditorGUIUtility.labelWidth - 16), GUILayout.MaxHeight (EditorGUIUtility.singleLineHeight));
+                EditorGUILayout.PrefixLabel (field.Name);
                 EditorGUILayout.SelectableLabel (strVal, GUILayout.MaxHeight (EditorGUIUtility.singleLineHeight));
                 GUILayout.EndHorizontal ();
             } else {
@@ -122,7 +122,7 @@ namespace Leopotam.EcsLite.UnityEditor {
 
         public static (bool, bool, object) Render (string label, Type type, object value, EcsEntityDebugView debugView) {
             if (Inspectors.TryGetValue (type, out var inspector)) {
-                var (changed, newValue) = inspector.OnGui (label, value, debugView.World, debugView.Entity);
+                var (changed, newValue) = inspector.OnGui (label, value, debugView);
                 return (true, changed, newValue);
             }
             return (false, false, null);
@@ -143,29 +143,29 @@ namespace Leopotam.EcsLite.UnityEditor {
 
     public interface IEcsComponentInspector {
         Type GetFieldType ();
-        (bool, object) OnGui (string label, object value, EcsWorld world, int entityId);
+        (bool, object) OnGui (string label, object value, EcsEntityDebugView entityView);
     }
 
     public abstract class EcsComponentInspectorTyped<T> : IEcsComponentInspector {
         public Type GetFieldType () => typeof (T);
         public virtual bool IsNullAllowed () => false;
 
-        public (bool, object) OnGui (string label, object value, EcsWorld world, int entityId) {
+        public (bool, object) OnGui (string label, object value, EcsEntityDebugView entityView) {
             if (value == null && !IsNullAllowed ()) {
                 GUILayout.BeginHorizontal ();
-                EditorGUILayout.SelectableLabel (label, GUILayout.MaxWidth (EditorGUIUtility.labelWidth - 16), GUILayout.MaxHeight (EditorGUIUtility.singleLineHeight));
-                EditorGUILayout.LabelField ("null", GUILayout.MaxHeight (EditorGUIUtility.singleLineHeight));
+                EditorGUILayout.PrefixLabel (label);
+                EditorGUILayout.SelectableLabel ("null", GUILayout.MaxHeight (EditorGUIUtility.singleLineHeight));
                 GUILayout.EndHorizontal ();
                 return (default, default);
             }
             var typedValue = (T) value;
-            var changed = OnGuiTyped (label, ref typedValue, world, entityId);
+            var changed = OnGuiTyped (label, ref typedValue, entityView);
             if (changed) {
                 return (true, typedValue);
             }
             return (default, default);
         }
 
-        public abstract bool OnGuiTyped (string label, ref T value, EcsWorld world, int entityId);
+        public abstract bool OnGuiTyped (string label, ref T value, EcsEntityDebugView entityView);
     }
 }

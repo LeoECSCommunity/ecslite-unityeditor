@@ -69,6 +69,7 @@ namespace Leopotam.EcsLite.UnityEditor {
                 var entityObserver = go.AddComponent<EcsEntityDebugView> ();
                 entityObserver.Entity = entity;
                 entityObserver.World = _world;
+                entityObserver.DebugSystem = this;
                 _entities[entity] = entityObserver;
                 if (_bakeComponentsInName) {
                     _dirtyEntities[entity] = 1;
@@ -100,6 +101,10 @@ namespace Leopotam.EcsLite.UnityEditor {
         public void OnWorldDestroyed (EcsWorld world) {
             _world.RemoveEventListener (this);
             Object.Destroy (_rootGO);
+        }
+
+        public EcsEntityDebugView GetEntityView (int entity) {
+            return entity >= 0 && entity < _entities.Length ? _entities[entity] : null;
         }
     }
 }
