@@ -110,10 +110,10 @@ namespace Leopotam.EcsLite.UnityEditor {
                     if (typeof (IEcsComponentInspector).IsAssignableFrom (type) && !type.IsInterface && !type.IsAbstract) {
                         if (Activator.CreateInstance (type) is IEcsComponentInspector inspector) {
                             var componentType = inspector.GetFieldType ();
-                            if (Inspectors.ContainsKey (componentType)) {
-                                Debug.LogWarningFormat ("Inspector for \"{0}\" already exists, new inspector will be used instead.", componentType.Name);
+                            if (!Inspectors.TryGetValue (componentType, out var prevInspector)
+                                || inspector.GetPriority () > prevInspector.GetPriority ()) {
+                                Inspectors[componentType] = inspector;
                             }
-                            Inspectors[componentType] = inspector;
                         }
                     }
                 }
@@ -143,12 +143,14 @@ namespace Leopotam.EcsLite.UnityEditor {
 
     public interface IEcsComponentInspector {
         Type GetFieldType ();
+        int GetPriority ();
         (bool, object) OnGui (string label, object value, EcsEntityDebugView entityView);
     }
 
     public abstract class EcsComponentInspectorTyped<T> : IEcsComponentInspector {
         public Type GetFieldType () => typeof (T);
         public virtual bool IsNullAllowed () => false;
+        public virtual int GetPriority () => 0;
 
         public (bool, object) OnGui (string label, object value, EcsEntityDebugView entityView) {
             if (value == null && !IsNullAllowed ()) {
