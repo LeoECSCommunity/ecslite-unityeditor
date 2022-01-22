@@ -4,7 +4,7 @@
     "displayName": "LeoECS Lite Unity Integration",
     "description": "UnityEditor integration for LeoECS Lite.",
     "unity": "2020.3",
-    "version": "2021.11.22",
+    "version": "2022.1.22",
     "keywords": [
         "leoecs",
         "ecs",

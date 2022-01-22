@@ -2,7 +2,7 @@
 // The MIT License
 // UnityEditor integration https://github.com/Leopotam/ecslite-unityeditor
 // for LeoECS Lite https://github.com/Leopotam/ecslite
-// Copyright (c) 2021 Leopotam <leopotam@gmail.com>
+// Copyright (c) 2021-2022 Leopotam <leopotam@gmail.com>
 // ----------------------------------------------------------------------------
 
 using System;
@@ -40,6 +40,11 @@ namespace Leopotam.EcsLite.UnityEditor {
             _entities = new EcsEntityDebugView [_world.GetWorldSize ()];
             _dirtyEntities = new Dictionary<int, byte> (_entities.Length);
             _world.AddEventListener (this);
+            var entities = Array.Empty<int> ();
+            var entitiesCount = _world.GetAllEntities (ref entities);
+            for (var i = 0; i < entitiesCount; i++) {
+                OnEntityCreated (entities[i]);
+            }
         }
 
         public void Run (EcsSystems systems) {
@@ -64,6 +69,7 @@ namespace Leopotam.EcsLite.UnityEditor {
                 var entityObserver = go.AddComponent<EcsEntityDebugView> ();
                 entityObserver.Entity = entity;
                 entityObserver.World = _world;
+                entityObserver.DebugSystem = this;
                 _entities[entity] = entityObserver;
                 if (_bakeComponentsInName) {
                     _dirtyEntities[entity] = 1;
@@ -95,6 +101,10 @@ namespace Leopotam.EcsLite.UnityEditor {
         public void OnWorldDestroyed (EcsWorld world) {
             _world.RemoveEventListener (this);
             Object.Destroy (_rootGO);
+        }
+
+        public EcsEntityDebugView GetEntityView (int entity) {
+            return entity >= 0 && entity < _entities.Length ? _entities[entity] : null;
         }
     }
 }

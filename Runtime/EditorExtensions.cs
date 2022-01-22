@@ -2,7 +2,7 @@
 // The MIT License
 // UnityEditor integration https://github.com/Leopotam/ecslite-unityeditor
 // for LeoECS Lite https://github.com/Leopotam/ecslite
-// Copyright (c) 2021 Leopotam <leopotam@gmail.com>
+// Copyright (c) 2021-2022 Leopotam <leopotam@gmail.com>
 // ----------------------------------------------------------------------------
 
 #if UNITY_EDITOR
@@ -28,6 +28,8 @@ namespace Leopotam.EcsLite.UnityEditor {
         public EcsWorld World;
         [NonSerialized]
         public int Entity;
+        [NonSerialized]
+        public EcsWorldDebugSystem DebugSystem;
     }
 }
 #endif
