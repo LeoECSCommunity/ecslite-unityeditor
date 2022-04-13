@@ -1,10 +1,10 @@
 {
-    "name": "com.leopotam.ecslite.unityeditor",
-    "author": "Leopotam",
-    "displayName": "LeoECS Lite Unity Integration",
-    "description": "UnityEditor integration for LeoECS Lite.",
+    "name": "com.leoecscommunity.ecslite.unityeditor",
+    "author": "LeoECSCommunity",
+    "displayName": "LeoECSCommunity Lite Unity Integration",
+    "description": "UnityEditor integration for LeoECSCommunity Lite.",
     "unity": "2020.3",
-    "version": "2022.1.22",
+    "version": "0.1.0-preview",
     "keywords": [
         "leoecs",
         "ecs",
@@ -15,6 +15,6 @@
     "dependencies": {},
     "repository": {
         "type": "git",
-        "url": "https://github.com/Leopotam/ecslite-unityeditor.git"
+        "url": "https://github.com/LeoECSCommunity/ecslite-unityeditor.git"
     }
 }
