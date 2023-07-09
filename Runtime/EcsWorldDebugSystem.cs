@@ -34,7 +34,7 @@ namespace Leopotam.EcsLite.UnityEditor {
             _entitiesRoot.SetParent (_rootGO.transform, false);
         }
 
-        public void PreInit (EcsSystems systems) {
+        public void PreInit (IEcsSystems systems) {
             _world = systems.GetWorld (_worldName);
             if (_world == null) { throw new Exception ("Cant find required world."); }
             _entities = new EcsEntityDebugView [_world.GetWorldSize ()];
@@ -47,7 +47,7 @@ namespace Leopotam.EcsLite.UnityEditor {
             }
         }
 
-        public void Run (EcsSystems systems) {
+        public void Run (IEcsSystems systems) {
             foreach (var pair in _dirtyEntities) {
                 var entity = pair.Key;
                 var entityName = entity.ToString (_entityNameFormat);
