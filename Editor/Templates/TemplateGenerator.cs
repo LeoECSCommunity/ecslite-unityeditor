@@ -50,19 +50,19 @@ namespace Leopotam.EcsLite.UnityEditor.Templates {
 
         [MenuItem ("Assets/Create/LeoECS Lite/Systems/Create InitSystem from template", false, -199)]
         static void CreateInitSystemTpl () {
-            CreateAndRenameAsset ($"{GetAssetPath ()}/EcsInitSystem.cs", GetIcon (),
+            CreateAndRenameAsset ($"{GetAssetPath ()}/InitSystem.cs", GetIcon (),
                 (name) => CreateTemplateInternal (GetTemplateContent (InitSystemTemplate), name));
         }
 
         [MenuItem ("Assets/Create/LeoECS Lite/Systems/Create RunSystem from template", false, -198)]
         static void CreateRunSystemTpl () {
-            CreateAndRenameAsset ($"{GetAssetPath ()}/EcsRunSystem.cs", GetIcon (),
+            CreateAndRenameAsset ($"{GetAssetPath ()}/RunSystem.cs", GetIcon (),
                 (name) => CreateTemplateInternal (GetTemplateContent (RunSystemTemplate), name));
         }
 
         [MenuItem ("Assets/Create/LeoECS Lite/Components/Create Component from template", false, -197)]
         static void CreateComponentTpl () {
-            CreateAndRenameAsset ($"{GetAssetPath ()}/EcsComponent.cs", GetIcon (),
+            CreateAndRenameAsset ($"{GetAssetPath ()}/Component.cs", GetIcon (),
                 (name) => CreateTemplateInternal (GetTemplateContent (ComponentTemplate), name));
         }
 
