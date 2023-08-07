@@ -19,6 +19,11 @@ namespace Leopotam.EcsLite.UnityEditor.Inspectors
 
 		public override bool OnGuiTyped(string label, ref EcsPackedEntity[] value, EcsEntityDebugView entityView)
 		{
+			if (value == null)
+			{
+				GUILayout.Label($"{label} array is null");
+				return true;
+			}
 			GUILayout.Label($"{label} has {value.Length} entitys:");
 			var entity = new EcsPackedEntityInspector();
 			for (int i = 0; i < value.Length; i++)

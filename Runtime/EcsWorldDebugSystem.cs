@@ -16,22 +16,26 @@ namespace Leopotam.EcsLite.UnityEditor {
         readonly GameObject _rootGO;
         readonly Transform _entitiesRoot;
         readonly bool _bakeComponentsInName;
-        readonly string _entityNameFormat;
+        readonly bool _avoidhierarchy;
+		readonly string _entityNameFormat;
         EcsWorld _world;
         EcsEntityDebugView[] _entities;
         Dictionary<int, byte> _dirtyEntities;
         Type[] _typesCache;
 
-        public EcsWorldDebugSystem (string worldName = null, bool bakeComponentsInName = true, string entityNameFormat = "X8") {
+        public EcsWorldDebugSystem (string worldName = null, bool bakeComponentsInName = true, string entityNameFormat = "X8", bool avoidhierarchy = false) {
             _bakeComponentsInName = bakeComponentsInName;
             _worldName = worldName;
             _entityNameFormat = entityNameFormat;
-            _rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
-            Object.DontDestroyOnLoad (_rootGO);
-            _rootGO.hideFlags = HideFlags.NotEditable;
+			_avoidhierarchy = avoidhierarchy;
+			_rootGO = new GameObject (_worldName != null ? $"[ECS-WORLD {_worldName}]" : "[ECS-WORLD]");
+            if (!_avoidhierarchy)
+			    Object.DontDestroyOnLoad (_rootGO);
+			_rootGO.hideFlags = HideFlags.NotEditable;
             _entitiesRoot = new GameObject ("Entities").transform;
             _entitiesRoot.gameObject.hideFlags = HideFlags.NotEditable;
-            _entitiesRoot.SetParent (_rootGO.transform, false);
+            if (!_avoidhierarchy)
+                _entitiesRoot.SetParent (_rootGO.transform, false);
         }
 
         public void PreInit (IEcsSystems systems) {
@@ -65,8 +69,9 @@ namespace Leopotam.EcsLite.UnityEditor {
         public void OnEntityCreated (int entity) {
             if (!_entities[entity]) {
                 var go = new GameObject ();
-                go.transform.SetParent (_entitiesRoot, false);
-                var entityObserver = go.AddComponent<EcsEntityDebugView> ();
+				if (!_avoidhierarchy)
+					go.transform.SetParent (_entitiesRoot, false);
+				var entityObserver = go.AddComponent<EcsEntityDebugView> ();
                 entityObserver.Entity = entity;
                 entityObserver.World = _world;
                 entityObserver.DebugSystem = this;
